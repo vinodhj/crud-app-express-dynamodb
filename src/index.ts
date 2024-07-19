@@ -1,4 +1,4 @@
-import express from "express";
+import express, { type Response, type Request } from "express";
 import productRoute from "./routes/product.route";
 
 const app = express();
@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: false }));
 // Routes
 app.use("/api", productRoute);
 
-app.get("/", (req, res) => {
+app.get("/", (req: Request, res: Response) => {
   res.send("Crud App is running!");
 });
 
