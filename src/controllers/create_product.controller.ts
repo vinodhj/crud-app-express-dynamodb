@@ -4,15 +4,12 @@ import {
 } from "@aws-sdk/client-dynamodb";
 import { nanoid } from "nanoid";
 import { getDynamoDBConfig } from "../config";
-import type express from "express";
+import type { Request, Response } from "express";
 
 // DynamoDB client
 const client_ddb = getDynamoDBConfig();
 
-export const createProduct = async (
-  req: express.Request,
-  res: express.Response
-) => {
+export const createProduct = async (req: Request, res: Response) => {
   const { name, price, image } = req.body;
   // Prepare item data for DynamoDB
   const params: PutItemCommandInput = {
