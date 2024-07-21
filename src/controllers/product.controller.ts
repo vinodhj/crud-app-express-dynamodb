@@ -18,14 +18,16 @@ export const product = async (req: Request, res: Response) => {
     },
     TableName: process.env.TABLE_NAME as string,
   };
-  //console.log(params);
   try {
     // Insert into DynamoDB
     const command = new GetItemCommand(params);
     const data = await client_ddb.send(command);
     console.log(JSON.stringify(data));
     if (!data.Item) return res.status(404).send("Item not found");
-    res.send("Item fetched successfully: " + JSON.stringify(data.Item));
+    res.json({
+      message: "success",
+      Items: data.Item,
+    });
     // res.send();
   } catch (error) {
     console.log("error", error);

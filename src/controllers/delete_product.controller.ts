@@ -23,7 +23,6 @@ export const deleteProduct = async (req: Request, res: Response) => {
     const command = new DeleteItemCommand(params);
     const data = await client_ddb.send(command);
     res.send("deleted successfully: " + JSON.stringify(data));
-    // res.send();
   } catch (error) {
     console.log("error", error);
     res.status(500).send(error);

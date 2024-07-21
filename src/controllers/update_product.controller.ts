@@ -39,13 +39,11 @@ export const updateProduct = async (req: Request, res: Response) => {
         "SET #NAME = :name, #PRICE = :price, #UPDATED_AT = :updated_at",
     }),
   };
-  //console.log(params);
   try {
     // Insert into DynamoDB
     const command = new UpdateItemCommand(params);
     const data = await client_ddb.send(command);
     res.send("Item updated successfully: " + JSON.stringify(data));
-    // res.send();
   } catch (error) {
     console.log("error", error);
     res.status(500).send(error);
