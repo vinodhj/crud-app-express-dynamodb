@@ -16,10 +16,12 @@ export const createProduct = async (req: Request, res: Response) => {
     TableName: process.env.TABLE_NAME as string,
     Item: {
       PK: { S: nanoid() },
-      SK: { S: new Date().toISOString() },
+      SK: { S: "products" },
       name: { S: name },
       price: { N: price.toString() },
       ...(image && { image: { S: image } }),
+      created_at: { S: new Date().toISOString() },
+      updated_at: { S: new Date().toISOString() },
     },
   };
   try {
