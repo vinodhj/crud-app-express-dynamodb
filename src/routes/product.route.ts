@@ -13,7 +13,7 @@ const router = express.Router();
 router.post("/post-products", createProduct);
 router.put("/update-product", updateProduct);
 router.get("/product/:pk", product);
-router.get("/allProducts", allProducts);
+router.get("/allProducts", allProducts); // with pagination
 router.delete("/delete-product/:pk", deleteProduct);
 
 // Batch operations
