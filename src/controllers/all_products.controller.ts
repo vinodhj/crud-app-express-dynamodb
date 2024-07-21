@@ -1,7 +1,4 @@
-import {
-  ScanCommand,
-  type ScanCommandInput,
-} from "@aws-sdk/client-dynamodb";
+import { QueryCommand, type QueryCommandInput } from "@aws-sdk/client-dynamodb";
 import { getDynamoDBConfig } from "../config";
 import type { Request, Response } from "express";
 
@@ -9,21 +6,44 @@ import type { Request, Response } from "express";
 const client_ddb = getDynamoDBConfig();
 
 export const allProducts = async (req: Request, res: Response) => {
-  // Prepare items data for DynamoDB
-  const params: ScanCommandInput = {
-    TableName: process.env.TABLE_NAME as string,
+  // Pagination parameters
+  const {
+    limit: limitStr,
+    startKey,
+    pk,
+    updated_at,
+    sortDirection,
+  } = req.query;
+  let startKeyStr;
+  if (startKey) {
+    startKeyStr = {
+      PK: { S: pk as string },
+      SK: { S: "products" },
+      updated_at: { S: updated_at as string },
+    };
+  }
+  const limit = limitStr ? Number(limitStr) : 10;
+  const params: QueryCommandInput = {
+    TableName: process.env.TABLE_NAME! as string,
+    IndexName: "SK-updated_at-index",
+    KeyConditionExpression: "SK = :sk",
+    ExpressionAttributeValues: {
+      ":sk": { S: "products" },
+    },
+    Limit: limit,
+    ExclusiveStartKey: startKey ? startKeyStr : undefined,
+    ScanIndexForward: sortDirection === "asc" ? true : false,
   };
-  //console.log(params);
+
   try {
-    // Insert into DynamoDB
-    const command = new ScanCommand(params);
+    const command = new QueryCommand(params);
     const data = await client_ddb.send(command);
-    console.log(JSON.stringify(data));
-    if (!data.Items) return res.status(404).send("Item not found");
-    res.send("Item fetched successfully: " + JSON.stringify(data.Items));
-    // res.send();
+    res.json({
+      items: data.Items || [],
+      lastEvaluatedKey: data.LastEvaluatedKey,
+    });
   } catch (error) {
-    console.log("error", error);
+    console.error("error", error);
     res.status(500).send(error);
   }
 };
