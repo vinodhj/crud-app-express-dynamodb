@@ -1,18 +1,18 @@
 import {
   TransactWriteItemsCommand,
-  UpdateItemCommand,
   type TransactWriteItemsCommandInput,
-  type UpdateItemCommandInput,
 } from "@aws-sdk/client-dynamodb";
 import { getDynamoDBConfig } from "../config";
 import type { Request, Response } from "express";
 import _ from "lodash";
+import dotenv from "dotenv";
+dotenv.config();
 
 // DynamoDB client
 const client_ddb = getDynamoDBConfig();
 
 // Batch size
-const batch_size = 25; // DynamoDB supports up to 25 items per request
+const batch_size = Number(process.env.DYNAMODB_BATCH_SIZE!); // DynamoDB supports up to 25 items per request
 
 export const batchUpdateProducts = async (req: Request, res: Response) => {
   const { input } = req.body;
@@ -60,7 +60,7 @@ export const batchUpdateProducts = async (req: Request, res: Response) => {
       const data = await client_ddb.send(command);
       console.log("Item updated successfully: " + JSON.stringify(data));
     }
-    res.send("Item updated successfully : " + chunks.length);
+    res.send("Batch Item updated successfully : " + chunks.length);
   } catch (error) {
     console.log("error", error);
     res.status(500).send(error);
