@@ -1,5 +1,7 @@
 import express, { type Response, type Request } from "express";
 import productRoute from "./routes/product.route";
+import morgan from "morgan";
+import { accessLogStream } from "./accessLogStream";
 
 const app = express();
 const port = 3002;
@@ -7,6 +9,7 @@ const port = 3002;
 // middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(morgan("combined", { stream: accessLogStream }));
 
 // Routes
 app.use("/api", productRoute);
