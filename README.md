@@ -1,4 +1,4 @@
-# bun-express-starter
+# crud-app-express-dynamodb
 
 To install dependencies:
 

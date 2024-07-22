@@ -19,20 +19,20 @@ app.use(morgan("combined", { stream: accessLogStream }));
 // Routes
 app.use("/api", productRoute);
 
-app.get("/", (req: Request, res: Response) => {
+app.get("/", (_req: Request, res: Response) => {
   res.send("Crud App is running!");
 });
 
 // Error handling middleware
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
+  const status = (err as any).cause?.status || 500;
   logger.error({
-    message: err.message,
-    stack: err.stack,
+    ...err,
     method: req.method,
     url: req.url,
-    status: (err as any).cause?.status || 500,
+    status,
   });
-  res.status((err as any).cause?.status || 500).json({ error: err.message });
+  res.status(status).json({ error: err.message });
 });
 
 app.listen(port, () => {
