@@ -30,9 +30,9 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     stack: err.stack,
     method: req.method,
     url: req.url,
-    status: (err as any).status || 500,
+    status: (err as any).cause?.status || 500,
   });
-  res.status((err as any).status || 500).json({ error: err.message });
+  res.status((err as any).cause?.status || 500).json({ error: err.message });
 });
 
 app.listen(port, () => {

@@ -8,7 +8,11 @@ import type { NextFunction, Request, Response } from "express";
 // DynamoDB client
 const client_ddb = getDynamoDBConfig();
 
-export const product = async (req: Request, res: Response, next: NextFunction) => {
+export const product = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { pk } = req.params;
   // Prepare item data for DynamoDB
   const params: GetItemCommandInput = {
@@ -22,8 +26,12 @@ export const product = async (req: Request, res: Response, next: NextFunction) =
     // Insert into DynamoDB
     const command = new GetItemCommand(params);
     const data = await client_ddb.send(command);
-    console.log(JSON.stringify(data));
-    if (!data.Item) return res.status(404).send("Item not found");
+    if (!data.Item) {
+      const error = new Error("Item not found", {
+        cause: { status: 404, message: "Item not found" },
+      });
+      next(error);
+    }
     res.json({
       message: "success",
       Items: data.Item,
