@@ -1,7 +1,12 @@
-import express, { type Response, type Request } from "express";
+import express, {
+  type Response,
+  type Request,
+  type NextFunction,
+} from "express";
 import productRoute from "./routes/product.route";
 import morgan from "morgan";
-import { accessLogStream } from "./accessLogStream";
+import { accessLogStream } from "./streamLogs/accessLogStream";
+import { logger } from "./streamLogs/logger";
 
 const app = express();
 const port = 3002;
@@ -16,6 +21,18 @@ app.use("/api", productRoute);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Crud App is running!");
+});
+
+// Error handling middleware
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  logger.error({
+    message: err.message,
+    stack: err.stack,
+    method: req.method,
+    url: req.url,
+    status: (err as any).status || 500,
+  });
+  res.status((err as any).status || 500).json({ error: err.message });
 });
 
 app.listen(port, () => {

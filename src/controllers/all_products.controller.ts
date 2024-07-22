@@ -1,11 +1,15 @@
 import { QueryCommand, type QueryCommandInput } from "@aws-sdk/client-dynamodb";
 import { getDynamoDBConfig } from "../config";
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 
 // DynamoDB client
 const client_ddb = getDynamoDBConfig();
 
-export const allProducts = async (req: Request, res: Response) => {
+export const allProducts = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   // Pagination parameters
   const {
     limit: limitStr,
@@ -43,7 +47,7 @@ export const allProducts = async (req: Request, res: Response) => {
       lastEvaluatedKey: data.LastEvaluatedKey,
     });
   } catch (error) {
-    console.error("error", error);
-    res.status(500).send(error);
+    console.log("error", error);
+    next(error);
   }
 };

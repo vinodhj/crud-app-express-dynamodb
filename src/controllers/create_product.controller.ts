@@ -4,12 +4,12 @@ import {
 } from "@aws-sdk/client-dynamodb";
 import { nanoid } from "nanoid";
 import { getDynamoDBConfig } from "../config";
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 
 // DynamoDB client
 const client_ddb = getDynamoDBConfig();
 
-export const createProduct = async (req: Request, res: Response) => {
+export const createProduct = async (req: Request, res: Response, next: NextFunction) => {
   const { name, price, image } = req.body;
   // Prepare item data for DynamoDB
   const params: PutItemCommandInput = {
@@ -30,6 +30,7 @@ export const createProduct = async (req: Request, res: Response) => {
     res.send("Item created successfully: " + JSON.stringify(data));
   } catch (error) {
     console.log("error", error);
-    res.status(500).send(error);
+    next(error);
+    // res.status(500).send(error);
   }
 };

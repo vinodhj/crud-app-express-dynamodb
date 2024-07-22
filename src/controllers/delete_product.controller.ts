@@ -3,12 +3,12 @@ import {
   type DeleteItemCommandInput,
 } from "@aws-sdk/client-dynamodb";
 import { getDynamoDBConfig } from "../config";
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 
 // DynamoDB client
 const client_ddb = getDynamoDBConfig();
 
-export const deleteProduct = async (req: Request, res: Response) => {
+export const deleteProduct = async (req: Request, res: Response, next: NextFunction) => {
   const { pk } = req.params;
   // Prepare item data for DynamoDB
   const params: DeleteItemCommandInput = {
@@ -25,6 +25,7 @@ export const deleteProduct = async (req: Request, res: Response) => {
     res.send("deleted successfully: " + JSON.stringify(data));
   } catch (error) {
     console.log("error", error);
-    res.status(500).send(error);
+    next(error);
+    // res.status(500).send(error);
   }
 };

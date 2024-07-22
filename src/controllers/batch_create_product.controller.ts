@@ -3,7 +3,7 @@ import {
   type BatchWriteItemCommandInput,
 } from "@aws-sdk/client-dynamodb";
 import { getDynamoDBConfig } from "../config";
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import _ from "lodash";
 import { nanoid } from "nanoid";
 import dotenv from "dotenv";
@@ -15,7 +15,7 @@ const client_ddb = getDynamoDBConfig();
 // Batch size
 const batch_size = Number(process.env.DYNAMODB_BATCH_SIZE!); // DynamoDB supports up to 25 items per request
 
-export const batchCreateProducts = async (req: Request, res: Response) => {
+export const batchCreateProducts = async (req: Request, res: Response, next: NextFunction) => {
   const { input } = req.body;
   const chunks = _.chunk(input, batch_size);
   try {
@@ -49,6 +49,7 @@ export const batchCreateProducts = async (req: Request, res: Response) => {
     res.send("Batch Item inserted successfully : " + chunks.length);
   } catch (error) {
     console.log("error", error);
-    res.status(500).send(error);
+    next(error);
+    // res.status(500).send(error);
   }
 };

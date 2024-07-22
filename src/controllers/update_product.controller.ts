@@ -3,12 +3,12 @@ import {
   type UpdateItemCommandInput,
 } from "@aws-sdk/client-dynamodb";
 import { getDynamoDBConfig } from "../config";
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 
 // DynamoDB client
 const client_ddb = getDynamoDBConfig();
 
-export const updateProduct = async (req: Request, res: Response) => {
+export const updateProduct = async (req: Request, res: Response, next: NextFunction) => {
   const { pk, name, price, image } = req.body;
   // Prepare item data for DynamoDB
   const params: UpdateItemCommandInput = {
@@ -46,6 +46,7 @@ export const updateProduct = async (req: Request, res: Response) => {
     res.send("Item updated successfully: " + JSON.stringify(data));
   } catch (error) {
     console.log("error", error);
-    res.status(500).send(error);
+    next(error);
+    // res.status(500).send(error);
   }
 };
